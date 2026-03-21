@@ -413,7 +413,7 @@ sudo systemctl disable --now nfs-blkmap    # No NFS block map`}
             We do not have datacenter uptime. We do not have datacenter throughput. We have a node that has been offline for days because nobody has walked over to unplug it and plug it back in. We have SD cards that are slowly dying. We have power supplies that cannot deliver enough current.
           </p>
           <p style={pStyle}>
-            But we have 52 TOPS of neural inference, 16 language models, 207 git repositories, 48 domains, encrypted mesh networking, and self-healing automation — all running on hardware we own, in a room we control, for $15 a month in electricity.
+            But we have 52 TOPS of neural inference, 16 language models, 207 git repositories, 141 domains, encrypted mesh networking, and self-healing automation — all running on hardware we own, in a room we control, for $15 a month in electricity.
           </p>
           <p style={pStyle}>
             The cloud is someone else's computer. This is ours.

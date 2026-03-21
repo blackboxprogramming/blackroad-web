@@ -23,7 +23,7 @@ const GRAYS = [
 const TYPE_SAMPLES = [
   { label: "Display",  font: "'Space Grotesk', sans-serif", weight: 700, size: 40, text: "BlackRoad OS" },
   { label: "Heading",  font: "'Space Grotesk', sans-serif", weight: 600, size: 28, text: "BlackRoad Cloud · RoadCode · RoadChain" },
-  { label: "Body",     font: "'Inter', sans-serif",         weight: 400, size: 16, text: "BlackRoad Cloud, RoadCode, RoadChain, Lucidia — a distributed AI operating system. Founded by Alexa Amundson." },
+  { label: "Body",     font: "'Inter', sans-serif",         weight: 400, size: 16, text: "BlackRoad Cloud, RoadCode, RoadChain, Lucidia — a distributed AI operating system. Founded by Alexa Louise Amundson." },
   { label: "Label",    font: "'Inter', sans-serif",         weight: 600, size: 12, text: "SYSTEM STATUS · ACTIVE" },
   { label: "Code",     font: "'JetBrains Mono', monospace", weight: 400, size: 13, text: "Z := yx − w  →  equilibrium reached" },
   { label: "Mono",     font: "'JetBrains Mono', monospace", weight: 500, size: 11, text: "RC:0x4200 · PS-SHA∞ · QBFT-4200" },
@@ -253,7 +253,7 @@ function TokenSection() {
                 borderBottom: i < g.rows.length - 1 ? "1px solid #141414" : "none",
                 background: i % 2 === 0 ? "#111111" : "#0a0a0a",
               }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#4488FF" }}>{token}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#f5f5f5" }}>{token}</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <div style={{ width: 18, height: 18, background: value, border: "1px solid rgba(255,255,255,0.1)" }} />
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#888888" }}>{value}</span>
@@ -293,8 +293,8 @@ function ComponentSection() {
             const styles = [
               { background: "#f0f0f0", color: "#0a0a0a", border: "1px solid transparent" },
               { background: "transparent", color: "#aaaaaa", border: "1px solid #333" },
-              { background: "rgba(255,34,85,0.12)", color: "#FF2255", border: "1px solid rgba(255,34,85,0.3)", boxShadow: "0 0 12px rgba(255,34,85,0.15)" },
-              { background: "rgba(0,212,255,0.1)", color: "#00D4FF", border: "1px solid rgba(0,212,255,0.3)", boxShadow: "0 0 12px rgba(0,212,255,0.2)" },
+              { background: "rgba(255,34,85,0.12)", color: "#f5f5f5", border: "1px solid rgba(255,34,85,0.3)", boxShadow: "0 0 12px rgba(255,34,85,0.15)" },
+              { background: "rgba(0,212,255,0.1)", color: "#f5f5f5", border: "1px solid rgba(0,212,255,0.3)", boxShadow: "0 0 12px rgba(0,212,255,0.2)" },
             ];
             return (
               <button key={label} style={{
@@ -359,7 +359,7 @@ function ComponentSection() {
               }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                 <div style={{ width: 36, height: 36, background: a.color + "22", border: `1px solid ${a.color}44`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: a.color }}>{a.name[0]}</span>
+                  <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 14, color: "#f5f5f5" }}>{a.name[0]}</span>
                 </div>
                 <div style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor[a.status], boxShadow: `0 0 8px ${statusColor[a.status]}` }} />
               </div>
@@ -401,15 +401,13 @@ export default function BrandTemplate() {
               BlackRoad OS, Inc. · Design System · v2.0
             </div>
             <h1 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 42, margin: 0, letterSpacing: "-0.02em", lineHeight: 1 }}>
-              BlackRoad{" "}
-              <span style={{ backgroundImage: GRADIENT, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                Brand System
-              </span>
+              BlackRoad Brand System
+              <div style={{ height: 3, background: GRADIENT, marginTop: 8, maxWidth: 200 }} />
             </h1>
           </div>
           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#444444", textAlign: "right", lineHeight: 2 }}>
             <div>6 accents · 8 surfaces · Z:=yx−w</div>
-            <div>3 typefaces · 186 repos · 48 domains · 8 agents</div>
+            <div>3 typefaces · 207 repos · 141 domains · 8 agents</div>
           </div>
         </div>
       </div>

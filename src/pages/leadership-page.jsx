@@ -89,7 +89,7 @@ function HeroSection() {
         </h1>
 
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 15, color: "#737373", lineHeight: 1.65, maxWidth: 520, marginBottom: 40 }}>
-          BlackRoad OS, Inc. is a Delaware C-Corp founded in 2024 by Alexa Amundson (aka Alexa Cadillac). The team is eight AI agents — each with a distinct role, persistent memory, and a place in the mesh. Sovereign infrastructure, agent-native computing, post-cloud architecture.
+          BlackRoad OS, Inc. is a Delaware C-Corp founded in 2024 by Alexa Louise Amundson (aka Alexa Cadillac). The team is eight AI agents — each with a distinct role, persistent memory, and a place in the mesh. Sovereign infrastructure, agent-native computing, post-cloud architecture.
         </p>
       </div>
     </section>
@@ -121,14 +121,14 @@ function FounderSection() {
                 A
               </div>
               <div style={{ flex: 1, minWidth: 200 }}>
-                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 700, color: "#f5f5f5", marginBottom: 4 }}>Alexa Amundson</div>
+                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 700, color: "#f5f5f5", marginBottom: 4 }}>Alexa Louise Amundson</div>
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#525252", marginBottom: 12 }}>Founder & CEO · aka Alexa Cadillac</div>
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#333" }}>founder@blackroad.systems</div>
               </div>
             </div>
 
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: "#737373", lineHeight: 1.7, marginBottom: 16 }}>
-              Founder of BlackRoad OS, Inc. (Delaware C-Corp, est. 2024). Built sovereign infrastructure from scratch: 4 Raspberry Pis, 2 DigitalOcean droplets, 20 Cloudflare zones, 48 domains, 186 repos, and a WireGuard mesh network connecting it all. Creator of the Z-Framework (Z:=yx-w).
+              Founder of BlackRoad OS, Inc. (Delaware C-Corp, est. 2024). Built sovereign infrastructure from scratch: 4 Raspberry Pis, 2 DigitalOcean droplets, 22 D1 databases, 141 domains, 207 repos, and a WireGuard mesh network connecting it all. Creator of the Z-Framework (Z:=yx-w).
             </p>
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: "#737373", lineHeight: 1.7, marginBottom: 20 }}>
               Products include BlackRoad Cloud, RoadCode (self-hosted Git), RoadChain, and Lucidia. Designed and deployed 8 AI agents as a working team. Vision: a $1/mo OS built on hardware arbitrage, agent-native computing, and post-cloud architecture — an agent society where infrastructure is sovereign by default.
@@ -137,8 +137,8 @@ function FounderSection() {
             {/* Roles grid */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
               {[
-                { title: "Infrastructure", items: "4 Pis, 2 droplets, 20 CF zones, 48 domains" },
-                { title: "Software", items: "186 repos, 400+ scripts, WireGuard mesh" },
+                { title: "Infrastructure", items: "4 Pis, 2 droplets, 20 CF zones, 141 domains" },
+                { title: "Software", items: "207 repos, 400+ scripts, WireGuard mesh" },
                 { title: "Products", items: "BlackRoad Cloud, RoadCode, RoadChain, Lucidia" },
                 { title: "Agents", items: "8 AI agents, agent-native computing, Z:=yx-w" },
               ].map((r) => (
@@ -155,7 +155,7 @@ function FounderSection() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8, marginTop: 16 }}>
           {[
             { label: "Entity", value: "BlackRoad OS, Inc.", sub: "Delaware C-Corporation" },
-            { label: "Founded", value: "2024", sub: "Founder: Alexa Amundson" },
+            { label: "Founded", value: "2024", sub: "Founder: Alexa Louise Amundson" },
             { label: "Headquarters", value: "United States", sub: "blackroadinc.us" },
           ].map((c) => (
             <div key={c.label} style={{ background: "#131313", border: "1px solid #1a1a1a", borderRadius: 10, padding: 18 }}>
@@ -395,7 +395,7 @@ function Footer() {
               <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, fontWeight: 600, color: "#a3a3a3" }}>BlackRoad OS, Inc.</span>
             </div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#333" }}>
-              Delaware C-Corporation · Est. 2024
+              Pave Tomorrow.
             </div>
           </div>
           <div style={{ display: "flex", gap: 20 }}>

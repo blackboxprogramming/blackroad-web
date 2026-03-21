@@ -11,16 +11,10 @@ export const CONFIG = {
   stripe: {
     publishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '',
     prices: {
-      sovereign_monthly: 'price_1T8szH3e5FMFdlFwtDZldpX2',
-      gateway_pro_monthly: 'price_1SZzFE3e5FMFdlFwNBbEIoZk',
-      gateway_team_monthly: 'price_1SZzFN3e5FMFdlFwXePFSBwA',
-      gateway_pro_yearly: 'price_1SZzFV3e5FMFdlFwfwpoA958',
-      gateway_team_yearly: 'price_1SZzFd3e5FMFdlFwjF5FhS1S',
-    },
-    paymentLinks: {
-      sovereign: 'https://buy.stripe.com/test_5kQbIUd3y8xT8SD3s04Vy00',
-      gateway_pro: 'https://buy.stripe.com/test_7sY28k0gM9BX2uf7Ig4Vy01',
-      gateway_team: 'https://buy.stripe.com/test_bJe9AM7Je29v9WH2nW4Vy02',
+      pro_monthly: 'price_1T5wq63e5FMFdlFwHhMAtyNi',
+      pro_yearly: 'price_1T5wq73e5FMFdlFw5ELr89dX',
+      enterprise_monthly: 'price_1T5wq83e5FMFdlFwt53jdGqX',
+      enterprise_yearly: 'price_1T5wq83e5FMFdlFw6Bsae4dK',
     },
   },
 
@@ -77,17 +71,17 @@ export const CONFIG = {
   // RoadCode orgs
   roadcode: {
     orgs: ['blackroad-os','lucidia','roadchain','infrastructure','agents','platform','services','tools'],
-    totalRepos: 186,
+    totalRepos: 207,
   },
 
   // Company
   company: {
     name: 'BlackRoad OS, Inc.',
-    founder: 'Alexa Amundson',
+    founder: 'Alexa Louise Amundson',
     email: 'amundsonalexa@gmail.com',
     founded: '2024',
     equations: '317+',
-    domains: 48,
+    domains: 141,
     volumes: 7,
   },
 };

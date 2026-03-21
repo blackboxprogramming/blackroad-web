@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLiveStats, useLiveRepos } from "../lib/useLiveData";
 
 const STOPS   = ["#FF6B2B","#FF2255","#CC00AA","#8844FF","#4488FF","#00D4FF"];
 const GRAD    = "linear-gradient(90deg,#FF6B2B,#FF2255,#CC00AA,#8844FF,#4488FF,#00D4FF)";
@@ -136,6 +137,7 @@ function GradBtn({ children, small = false, outline = false, onClick }) {
 // ─── Hero ─────────────────────────────────────────────────────────
 function Hero() {
   const w = useWidth();
+  const { stats } = useLiveStats();
   const [tick, setTick] = useState(0);
   useEffect(() => { const id = setInterval(() => setTick(t => t + 1), 50); return () => clearInterval(id); }, []);
   const angle = (tick * 0.5) % 360;
@@ -182,13 +184,18 @@ function Hero() {
 
       {/* CTAs */}
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", animation: "fadeUp 0.6s ease 0.45s both" }}>
-        <GradBtn>Get Early Access</GradBtn>
-        <GradBtn outline>Watch Demo →</GradBtn>
+        <GradBtn onClick={() => window.location.href = "/pricing"}>Start Building</GradBtn>
+        <GradBtn outline onClick={() => window.location.href = "/docs"}>Read the Docs →</GradBtn>
       </div>
 
-      {/* Stat row */}
+      {/* Stat row — live from APIs */}
       <div style={{ display: "flex", gap: w < 480 ? 24 : 48, marginTop: 72, flexWrap: "wrap", justifyContent: "center", animation: "fadeUp 0.6s ease 0.55s both" }}>
-        {[["186","Git Repos"],["8","Active Agents"],["48","Live Domains"],["6","Servers"]].map(([v, l]) => (
+        {[
+          [stats?.repos || "158", "Open Repos"],
+          [stats?.users || "–", "Users"],
+          [stats?.domains || "141", "Live Domains"],
+          [stats?.nodes || "5", "Edge Nodes"],
+        ].map(([v, l]) => (
           <div key={l} style={{ textAlign: "center" }}>
             <div style={{ fontFamily: grotesk, fontWeight: 700, fontSize: "clamp(20px, 4vw, 28px)", color: "#f0f0f0", letterSpacing: "-0.03em" }}>{v}</div>
             <div style={{ fontFamily: mono, fontSize: 10, color: "#383838", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{l}</div>
@@ -267,7 +274,7 @@ function Product() {
 
 // ─── Vision / marquee ─────────────────────────────────────────────
 function Marquee() {
-  const words = ["Sovereign", "Spatial", "Sentient", "Z:=yx−w", "BlackRoad OS", "Edge-first", "Agent-native", "Post-cloud"];
+  const words = ["Sovereign", "Consent-first", "Sentient", "Care", "BlackRoad OS", "Edge-first", "Agent-native", "Joy"];
   const repeated = [...words, ...words];
   return (
     <div style={{ overflow: "hidden", borderTop: "1px solid #0d0d0d", borderBottom: "1px solid #0d0d0d", padding: "18px 0", background: "#040404" }}>
@@ -298,19 +305,19 @@ function Vision() {
               The OS for<br />what comes<br />after the cloud.
             </h2>
             <p style={{ fontFamily: inter, fontSize: 15, color: "#555", lineHeight: 1.8, marginBottom: 24 }}>
-              The cloud era optimized for scale. We're building for sovereignty — where organizations own their compute, their data, and their intelligence layer outright.
+              The cloud era optimized for scale at your expense. We're building for sovereignty — where you own your compute, your data, and your intelligence layer. With care, consent, and joy built into every layer.
             </p>
             <p style={{ fontFamily: inter, fontSize: 15, color: "#555", lineHeight: 1.8, marginBottom: 36 }}>
               BlackRoad OS is the foundation for that future. Not a SaaS. Not a platform. An operating system for AI-native organizations.
             </p>
-            <GradBtn>Read the Manifesto →</GradBtn>
+            <GradBtn onClick={() => window.location.href = "/blog/sovereign-manifesto"}>Read the Manifesto →</GradBtn>
           </FadeIn>
 
           <FadeIn delay={120} dir="right">
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {[
-                { label: "Traditional Cloud",  items: ["Vendor dependency", "Shared infrastructure", "Opaque data flows", "Per-seat pricing treadmill"] },
-                { label: "BlackRoad OS",        items: ["Full sovereignty", "Your own cluster", "Z-framework coherence", "One flat operator tier"], color: true },
+                { label: "Traditional Cloud",  items: ["Vendor dependency", "Opaque data flows", "No consent over your data", "Per-seat pricing treadmill"] },
+                { label: "BlackRoad OS",        items: ["Full sovereignty", "Your own cluster", "Consent-first architecture", "Care in every layer"], color: true },
               ].map(col => (
                 <div key={col.label} style={{ background: col.color ? "#070707" : "#040404", border: `1px solid ${col.color ? "#1e1e1e" : "#0d0d0d"}`, padding: "24px 24px" }}>
                   <div style={{ fontFamily: mono, fontSize: 10, color: col.color ? "#444" : "#252525", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 16 }}>
@@ -343,8 +350,8 @@ function Vision() {
 function Agents() {
   const w = useWidth();
   const agents = [
-    { name: "Alice",      role: "Gateway & DNS",           color: "#FF6B2B", stat: "Pi 400 · 48 domains", desc: "Routes all 48 domains through Cloudflare tunnels. Runs Pi-hole DNS, PostgreSQL, and PM2 services from a 16GB SD card." },
-    { name: "Lucidia",    role: "Compute & Memory",       color: "#8844FF", stat: "Pi 5 · 1TB NVMe", desc: "RoadCode git server (186 repos), Ollama AI inference, Docker Swarm, NATS messaging. The compute core." },
+    { name: "Alice",      role: "Gateway & DNS",           color: "#FF6B2B", stat: "Pi 400 · 141 domains", desc: "Routes all 141 domains through Cloudflare tunnels. Runs Pi-hole DNS, PostgreSQL, and PM2 services from a 16GB SD card." },
+    { name: "Lucidia",    role: "Compute & Memory",       color: "#8844FF", stat: "Pi 5 · 1TB NVMe", desc: "RoadCode git server (207 repos), Ollama AI inference, Docker Swarm, NATS messaging. The compute core." },
     { name: "Cecilia",    role: "Edge & Storage",         color: "#CC00AA", stat: "Pi 5 · Hailo AI", desc: "MinIO object storage, Caddy reverse proxy, Hailo AI accelerator. Edge compute with hardware ML." },
     { name: "Eve",        role: "Cloud Intelligence",     color: "#00D4FF", stat: "NYC3 · 4vCPU",   desc: "Cloud compute on DigitalOcean. Caddy routing, Ollama inference, NATS event bus. Always-on analyst." },
   ];
@@ -373,7 +380,7 @@ function Agents() {
                       <div style={{ fontFamily: grotesk, fontWeight: 700, fontSize: 20, color: "#ebebeb", letterSpacing: "-0.02em" }}>{a.name}</div>
                       <div style={{ fontFamily: mono, fontSize: 10, color: "#383838", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 4 }}>{a.role}</div>
                     </div>
-                    <div style={{ fontFamily: mono, fontSize: 11, color: a.color, background: a.color + "14", padding: "4px 10px", border: `1px solid ${a.color}22` }}>
+                    <div style={{ fontFamily: mono, fontSize: 11, color: "#f5f5f5", background: a.color + "14", padding: "4px 10px", border: `1px solid ${a.color}22` }}>
                       {a.stat}
                     </div>
                   </div>
@@ -383,6 +390,98 @@ function Agents() {
             </FadeIn>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Live Repos ──────────────────────────────────────────────────
+function LiveRepos() {
+  const w = useWidth();
+  const { repos, loading } = useLiveRepos();
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? repos.slice(0, 24) : repos.slice(0, 6);
+  const cols = w >= 900 ? "repeat(3,1fr)" : w >= 580 ? "repeat(2,1fr)" : "1fr";
+
+  const langColors = {
+    JavaScript: "#f1e05a", TypeScript: "#3178c6", Python: "#3572A5", Shell: "#89e051",
+    Go: "#00ADD8", Rust: "#dea584", HTML: "#e34c26", CSS: "#563d7c", Dockerfile: "#384d54",
+  };
+
+  if (loading) return null;
+
+  return (
+    <section style={{ padding: w < 480 ? "80px 20px" : "100px 40px", borderTop: "1px solid #0d0d0d" }}>
+      <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+        <FadeIn>
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <div style={{ fontFamily: mono, fontSize: 10, color: "#383838", textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 16 }}>Live from GitHub</div>
+            <h2 style={{ fontFamily: grotesk, fontWeight: 700, fontSize: "clamp(32px, 7vw, 60px)", color: "#f5f5f5", letterSpacing: "-0.04em", lineHeight: 1.0, marginBottom: 20 }}>
+              Built in the open.
+            </h2>
+            <p style={{ fontFamily: inter, fontSize: 16, color: "#555", maxWidth: 480, margin: "0 auto", lineHeight: 1.7 }}>
+              Every repo is real. Every line ships. Pulled live from GitHub — not a mockup.
+            </p>
+          </div>
+        </FadeIn>
+
+        <div style={{ display: "grid", gridTemplateColumns: cols, gap: 8 }}>
+          {visible.map((r, i) => (
+            <FadeIn key={r.name} delay={i * 40}>
+              <a
+                href={r.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none", display: "block", height: "100%" }}
+              >
+                <div style={{
+                  background: "#060606", border: "1px solid #141414", padding: "20px 20px",
+                  height: "100%", display: "flex", flexDirection: "column",
+                  transition: "border-color 0.2s, transform 0.2s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "#2a2a2a"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "#141414"; e.currentTarget.style.transform = "none"; }}
+                >
+                  <div style={{ fontFamily: grotesk, fontWeight: 700, fontSize: 15, color: "#d0d0d0", letterSpacing: "-0.02em", marginBottom: 8 }}>{r.name}</div>
+                  <div style={{ fontFamily: inter, fontSize: 12, color: "#484848", lineHeight: 1.6, flex: 1, marginBottom: 12 }}>
+                    {r.description || "No description"}
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    {r.language && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: "50%", background: langColors[r.language] || "#666" }} />
+                        <span style={{ fontFamily: mono, fontSize: 10, color: "#484848" }}>{r.language}</span>
+                      </div>
+                    )}
+                    {r.stars > 0 && (
+                      <span style={{ fontFamily: mono, fontSize: 10, color: "#484848" }}>{r.stars}</span>
+                    )}
+                    {r.topics.length > 0 && (
+                      <span style={{ fontFamily: mono, fontSize: 9, color: "#333", background: "#0a0a0a", padding: "2px 6px", border: "1px solid #1a1a1a" }}>{r.topics[0]}</span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            </FadeIn>
+          ))}
+        </div>
+
+        {repos.length > 6 && (
+          <div style={{ textAlign: "center", marginTop: 32 }}>
+            <button
+              onClick={() => setShowAll(!showAll)}
+              style={{
+                fontFamily: mono, fontSize: 12, color: "#555", background: "transparent",
+                border: "1px solid #1e1e1e", padding: "10px 28px", cursor: "pointer",
+                transition: "border-color 0.2s, color 0.2s",
+              }}
+              onMouseEnter={e => { e.target.style.borderColor = "#444"; e.target.style.color = "#aaa"; }}
+              onMouseLeave={e => { e.target.style.borderColor = "#1e1e1e"; e.target.style.color = "#555"; }}
+            >
+              {showAll ? "Show less" : `Show all ${repos.length} repos →`}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -404,7 +503,7 @@ function Pricing() {
     },
     {
       name: "Sovereign",
-      price: "$299",
+      price: "$199",
       cadence: "/ month",
       color: "#8844FF",
       featured: true,
@@ -451,7 +550,10 @@ function Pricing() {
                 {p.featured && (
                   <div style={{ position: "absolute", top: -1, left: 24, right: 24, height: 2, background: GRAD }} />
                 )}
-                <div style={{ fontFamily: mono, fontSize: 9, color: p.color, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 20 }}>{p.name}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
+                  <span style={{ fontFamily: mono, fontSize: 9, color: "#f5f5f5", textTransform: "uppercase", letterSpacing: "0.14em" }}>{p.name}</span>
+                </div>
                 <div style={{ marginBottom: 28 }}>
                   <span style={{ fontFamily: grotesk, fontWeight: 700, fontSize: 38, color: "#f0f0f0", letterSpacing: "-0.04em" }}>{p.price}</span>
                   <span style={{ fontFamily: mono, fontSize: 11, color: "#383838", marginLeft: 6 }}>{p.cadence}</span>
@@ -482,16 +584,16 @@ function CTA() {
       <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 700, height: 400, background: "radial-gradient(ellipse, rgba(136,68,255,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
       <FadeIn>
         <div style={{ maxWidth: 640, margin: "0 auto", position: "relative" }}>
-          <div style={{ fontFamily: mono, fontSize: 10, color: "#383838", textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 20 }}>Join the Beta</div>
+          <div style={{ fontFamily: mono, fontSize: 10, color: "#383838", textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 20 }}>Come Build With Us</div>
           <h2 style={{ fontFamily: grotesk, fontWeight: 700, fontSize: "clamp(34px, 8vw, 68px)", color: "#f5f5f5", letterSpacing: "-0.04em", lineHeight: 1.0, marginBottom: 24 }}>
-            Own your<br />infrastructure.
+            Your stack.<br />Your terms.
           </h2>
           <p style={{ fontFamily: inter, fontSize: 16, color: "#555", lineHeight: 1.7, marginBottom: 44 }}>
-            Request early access to BlackRoad OS. Sovereign compute, sentient agents, and a stack that's actually yours.
+            BlackRoad OS is built with care, deployed with consent, and designed to be fun to use. Sovereign compute, sentient agents, and a stack that's actually yours.
           </p>
           <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-            <GradBtn>Request Early Access</GradBtn>
-            <GradBtn outline>Read the Docs →</GradBtn>
+            <GradBtn onClick={() => window.location.href = "/pricing"}>Start Free</GradBtn>
+            <GradBtn outline onClick={() => window.location.href = "/docs"}>Explore the Docs →</GradBtn>
           </div>
           <div style={{ marginTop: 40, fontFamily: mono, fontSize: 10, color: "#252525" }}>
             Z:=yx−w · blackroad.io · All systems operational
@@ -520,8 +622,8 @@ function Footer() {
             <div style={{ fontFamily: mono, fontSize: 10, color: "#252525" }}>The OS for AI-native organizations.</div>
           </div>
           <div style={{ display: "flex", gap: w < 480 ? 20 : 40, flexWrap: "wrap" }}>
-            {["Product","Vision","Agents","Docs","Manifesto","Contact"].map(l => (
-              <a key={l} href="#" style={{ fontFamily: inter, fontSize: 12, color: "#353535", textDecoration: "none", transition: "color 0.15s" }}
+            {[["Product","#product"],["Vision","#vision"],["Agents","#agents"],["Docs","/docs"],["Backlog","https://backlog-blackroad-io.pages.dev"],["Pricing","/pricing"]].map(([l, href]) => (
+              <a key={l} href={href} style={{ fontFamily: inter, fontSize: 12, color: "#353535", textDecoration: "none", transition: "color 0.15s" }}
                 onMouseEnter={e => e.target.style.color = "#888"}
                 onMouseLeave={e => e.target.style.color = "#353535"}
               >{l}</a>
@@ -529,7 +631,7 @@ function Footer() {
           </div>
         </div>
         <div style={{ marginTop: 32, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-          <div style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>© 2026 BlackRoad OS, Inc. All rights reserved.</div>
+          <div style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>© 2026 BlackRoad OS — Pave Tomorrow.</div>
           <div style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>v2 · Z:=yx−w</div>
         </div>
       </div>
@@ -587,6 +689,7 @@ export default function BlackRoadLanding() {
         <Product />
         <Vision />
         <Agents />
+        <LiveRepos />
         <Pricing />
         <CTA />
         <Footer />

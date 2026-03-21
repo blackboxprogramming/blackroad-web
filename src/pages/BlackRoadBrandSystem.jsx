@@ -357,7 +357,7 @@ function CodeBlock({ value, label }) {
           onClick={copy}
           style={{
             fontFamily: mono, fontSize: 9,
-            color: copied ? "#00D4FF" : "#555",
+            color: copied ? "#f5f5f5" : "#555",
             background: "none", border: "none", cursor: "pointer",
             textTransform: "uppercase", letterSpacing: "0.08em",
             transition: "color 0.2s",
@@ -482,7 +482,7 @@ export default function BlackRoadBrandSystem() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 12 }}>
               <div>
                 <div style={{ fontFamily: grotesk, fontWeight: 700, fontSize: 18, color: "#ebebeb", letterSpacing: "-0.03em", marginBottom: 5 }}>BlackRoad</div>
-                <div style={{ fontFamily: mono, fontSize: 10, color: "#333" }}>BlackRoad OS, Inc. · blackroad.io · Z:=yx−w · 186 repos · 48 domains · 8 agents</div>
+                <div style={{ fontFamily: mono, fontSize: 10, color: "#333" }}>BlackRoad OS, Inc. · blackroad.io · Z:=yx−w · 207 repos · 141 domains · 8 agents</div>
               </div>
               <div style={{ fontFamily: mono, fontSize: 10, color: "#282828" }}>v2 · 2026</div>
             </div>

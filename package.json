@@ -7,7 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "npx playwright test",
+    "test:stripe": "npx playwright test e2e/stripe.spec.js",
+    "test:clerk": "npx playwright test e2e/clerk.spec.js",
+    "test:stripe:full": "STRIPE_E2E_FULL=true npx playwright test e2e/stripe.spec.js",
+    "test:clerk:full": "CLERK_E2E_FULL=true npx playwright test e2e/clerk.spec.js",
+    "test:all:full": "STRIPE_E2E_FULL=true CLERK_E2E_FULL=true npx playwright test",
+    "test:ui": "npx playwright test --ui"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
@@ -19,6 +26,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@playwright/test": "^1.58.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

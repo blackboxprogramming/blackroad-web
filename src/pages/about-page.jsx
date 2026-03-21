@@ -24,8 +24,8 @@ const VALUES = [
 ];
 
 const TIMELINE = [
-  { year: "2024", events: ["BlackRoad OS, Inc. incorporated (Delaware C-Corp)", "Z-Framework (Z:=yx-w) formalized", "Initial infrastructure: 4 Raspberry Pis, 2 DigitalOcean droplets", "48 domains acquired, 20 Cloudflare zones configured"] },
-  { year: "2025", events: ["186 repos across 15 GitHub organizations", "8 AI agents spawned and operational", "WireGuard mesh network connecting all nodes", "BlackRoad Cloud, RoadCode, RoadChain, and Lucidia in development", "400+ shell scripts powering the OS layer"] },
+  { year: "2024", events: ["BlackRoad OS, Inc. incorporated (Delaware C-Corp)", "Z-Framework (Z:=yx-w) formalized", "Initial infrastructure: 4 Raspberry Pis, 2 DigitalOcean droplets", "141 domains acquired, 22 D1 databases configured"] },
+  { year: "2025", events: ["207 repos across 15 GitHub organizations", "8 AI agents spawned and operational", "WireGuard mesh network connecting all nodes", "BlackRoad Cloud, RoadCode, RoadChain, and Lucidia in development", "400+ shell scripts powering the OS layer"] },
   { year: "2026", events: ["$1/mo OS — sovereign infrastructure for everyone", "Agent society: agent-native computing at scale", "Hardware arbitrage model: post-cloud architecture", "SOC 2 compliance target"] },
 ];
 
@@ -84,13 +84,13 @@ function FounderSection() {
                 A
               </div>
               <div>
-                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 700, color: "#f5f5f5" }}>Alexa Amundson</div>
+                <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 22, fontWeight: 700, color: "#f5f5f5" }}>Alexa Louise Amundson</div>
                 <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#525252" }}>Founder & CEO · aka Alexa Cadillac</div>
               </div>
             </div>
 
             <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: "#737373", lineHeight: 1.7, marginBottom: 16 }}>
-              Founder of BlackRoad OS, Inc. (Delaware C-Corp, est. 2024). Architect of sovereign infrastructure, agent-native computing, and post-cloud architecture. 186 repos. 8 AI agents. 48 domains. 4 Raspberry Pis and 2 DigitalOcean droplets running a WireGuard mesh. One vision: a $1/mo OS that gives a damn.
+              Founder of BlackRoad OS, Inc. (Delaware C-Corp, est. 2024). Architect of sovereign infrastructure, agent-native computing, and post-cloud architecture. 207 repos. 8 AI agents. 141 domains. 4 Raspberry Pis and 2 DigitalOcean droplets running a WireGuard mesh. One vision: a $1/mo OS that gives a damn.
             </p>
 
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -103,10 +103,10 @@ function FounderSection() {
           {/* Stats */}
           <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", gap: 8, minWidth: 160 }}>
             {[
-              { value: "186", label: "Repos" },
+              { value: "207", label: "Repos" },
               { value: "8", label: "AI Agents" },
-              { value: "48", label: "Domains" },
-              { value: "20", label: "CF Zones" },
+              { value: "141", label: "Domains" },
+              { value: "22", label: "D1 DBs" },
             ].map((s) => (
               <div key={s.label} style={{ background: "#131313", border: "1px solid #1a1a1a", borderRadius: 8, padding: "14px 18px" }}>
                 <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 24, fontWeight: 700, color: "#f5f5f5", lineHeight: 1 }}>{s.value}</div>
@@ -136,7 +136,7 @@ function MissionSection() {
             Big tech built systems that treat people as products to be optimized. BlackRoad is building the opposite: sovereign infrastructure where you own the hardware, the data, and the agents that work on your behalf. No rent-seeking. No lock-in. No extraction.
           </p>
           <p style={{ marginBottom: 16 }}>
-            BlackRoad OS is a post-cloud architecture — 4 Raspberry Pis, 2 DigitalOcean droplets, 20 Cloudflare zones, and a WireGuard mesh network running 8 AI agents across 186 repos. Products include BlackRoad Cloud, RoadCode (self-hosted Git), RoadChain, and Lucidia. The Z-Framework (Z:=yx-w) is the mathematical foundation underneath it all.
+            BlackRoad OS is a post-cloud architecture — 4 Raspberry Pis, 2 DigitalOcean droplets, 22 D1 databases, and a WireGuard mesh network running 8 AI agents across 207 repos. Products include BlackRoad Cloud, RoadCode (self-hosted Git), RoadChain, and Lucidia. The Z-Framework (Z:=yx-w) is the mathematical foundation underneath it all.
           </p>
           <p>
             The pitch: a $1/mo OS built on hardware arbitrage, agent-native computing, and the radical belief that infrastructure should be sovereign. One founder, eight agents, and a society of machines working for humans — not on them.
@@ -221,7 +221,7 @@ function TeamSection() {
         </div>
 
         <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#333", textAlign: "center", marginTop: 20 }}>
-          8 agents · 186 repos · 4 Pis · 2 droplets · 20 Cloudflare zones
+          8 agents · 207 repos · 4 Pis · 2 droplets · 22 D1 databases
         </div>
       </div>
     </section>
@@ -343,7 +343,7 @@ function Footer() {
               <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: 13, fontWeight: 600, color: "#a3a3a3" }}>BlackRoad OS, Inc.</span>
             </div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#333" }}>
-              Delaware C-Corporation · blackroad.io
+              Pave Tomorrow.
             </div>
           </div>
           <div style={{ display: "flex", gap: 20 }}>

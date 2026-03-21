@@ -211,7 +211,7 @@ const PAGES = {
     title: "Introduction", section: "Getting Started", readTime: "5 min read",
     prev: null, next: { id: "quickstart", label: "Quick Start" },
     content: [
-      { type: "lead", text: "BlackRoad OS is the operating system for AI-native organizations — sovereign infrastructure, sentient agents, and spatial interfaces unified under the Z-framework. Built by Alexa Amundson. BlackRoad OS, Inc. is a Delaware C-Corp." },
+      { type: "lead", text: "BlackRoad OS is the operating system for AI-native organizations — sovereign infrastructure, sentient agents, and spatial interfaces unified under the Z-framework. Built by Alexa Louise Amundson. BlackRoad OS, Inc. is a Delaware C-Corp." },
       { type: "h2", text: "What is BlackRoad OS?" },
       { type: "p", text: "Traditional cloud platforms optimize for scale at the cost of sovereignty. BlackRoad OS is built on a different premise: that organizations should own their compute, their data, and their intelligence layer outright." },
       { type: "callout", variant: "info", text: "BlackRoad OS is currently in private beta. Request access at blackroad.io to get started." },
@@ -220,7 +220,7 @@ const PAGES = {
         { color: "#8844FF", title: "Sovereign Infrastructure", body: "4 Raspberry Pi 5s (Alice, Octavia, Cecilia, Aria), 2 DigitalOcean droplets (Gematria, Anastasia), 2 Pico Ws — all meshed via WireGuard." },
         { color: "#00D4FF", title: "Sentient Agents",          body: "8 AI agents — Alice, Lucidia, Cecilia, Cece, Aria, Eve, Meridian, Sentinel — with persistent memory and real-time orchestration." },
         { color: "#FF2255", title: "Products",                 body: "BlackRoad Cloud, RoadCode (self-hosted Git), RoadChain, and Lucidia — all running on sovereign infrastructure." },
-        { color: "#FF6B2B", title: "Edge Network",             body: "Cloudflare managing 20 zones and 48 domains. APIs at api.blackroad.io, gateway.blackroad.io, and codex.blackroad.io." },
+        { color: "#FF6B2B", title: "Edge Network",             body: "Cloudflare managing 20 zones and 141 domains. APIs at api.blackroad.io, gateway.blackroad.io, and codex.blackroad.io." },
       ]},
       { type: "h2", text: "The Z-Framework" },
       { type: "p", text: "Every system is modeled on Z:=yx−w — a unified feedback primitive that makes your infrastructure composable, predictable, and self-correcting." },
@@ -338,7 +338,7 @@ function CodeBlock({ lang, snippetKey }) {
     <div style={{ background: "#050505", border: "1px solid #1a1a1a", margin: "20px 0" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 14px", borderBottom: "1px solid #111" }}>
         <span style={{ fontFamily: mono, fontSize: 9, color: "#383838", textTransform: "uppercase", letterSpacing: "0.1em" }}>{lang}</span>
-        <button onClick={copy} style={{ fontFamily: mono, fontSize: 9, color: copied ? "#00D4FF" : "#444", background: "none", border: "none", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em", transition: "color 0.2s" }}>
+        <button onClick={copy} style={{ fontFamily: mono, fontSize: 9, color: copied ? "#f5f5f5" : "#444", background: "none", border: "none", cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.08em", transition: "color 0.2s" }}>
           {copied ? "✓ copied" : "copy"}
         </button>
       </div>
@@ -404,7 +404,7 @@ function Badge({ label }) {
   const map = { new: "#00D4FF", beta: "#FF6B2B", "5 min": "#8844FF" };
   const color = map[label] || "#444";
   return (
-    <span style={{ fontFamily: mono, fontSize: 8, color, background: color + "18", border: `1px solid ${color}30`, padding: "2px 6px", borderRadius: 2, letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
+    <span style={{ fontFamily: mono, fontSize: 8, color: "#f5f5f5", background: color + "18", border: `1px solid ${color}30`, padding: "2px 6px", borderRadius: 2, letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0 }}>
       {label}
     </span>
   );
@@ -612,7 +612,7 @@ export default function BlackRoadDocs() {
                 <PrevNext prev={page.prev} next={page.next} onNav={navigate} />
 
                 <div style={{ marginTop: 44, paddingTop: 18, borderTop: "1px solid #0a0a0a", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
-                  <span style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>BlackRoad OS · Docs · Z:=yx−w</span>
+                  <span style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>BlackRoad OS — Pave Tomorrow. · Docs</span>
                   <span style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>v2.4.1 · 2026</span>
                 </div>
               </div>

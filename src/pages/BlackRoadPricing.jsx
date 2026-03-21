@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { CONFIG } from "../lib/config";
+import { trackEvent } from "../lib/analytics";
+import { useAuth } from "../lib/useAuth";
 
 const STOPS = ["#FF6B2B","#FF2255","#CC00AA","#8844FF","#4488FF","#00D4FF"];
 const GRAD = "linear-gradient(90deg,#FF6B2B,#FF2255,#CC00AA,#8844FF,#4488FF,#00D4FF)";
@@ -8,160 +8,91 @@ const mono = "'JetBrains Mono', monospace";
 const grotesk = "'Space Grotesk', sans-serif";
 const inter = "'Inter', sans-serif";
 
-const STRIPE_API = "https://stripe.blackroad.io";
+const ROADPAY_API = "https://roadpay.amundsonalexa.workers.dev";
 
-const stripePromise = CONFIG.stripe.publishableKey
-  ? loadStripe(CONFIG.stripe.publishableKey)
-  : null;
+// Plans and addons now loaded from RoadPay API — no hardcoded Stripe price IDs
 
-// ─── Plan definitions ───────────────────────────────────────────────
-const PLANS = [
-  {
-    id: "operator",
-    name: "Operator",
-    tagline: "Open source core",
-    price: 0,
-    interval: "forever",
-    color: "#4488FF",
-    priceId: null,
-    features: [
-      "Self-hosted deployment",
-      "Lucidia base agent",
-      "Z-framework SDK",
-      "Community support",
-      "BlackRoad CLI tools",
-      "1 Pi node",
-    ],
-    cta: "Deploy Free",
-    action: "github",
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    tagline: "For builders",
-    price: 49,
-    interval: "month",
-    color: "#FF6B2B",
-    priceId: "price_1SzlKdChUUSEbzyhh5y6TzhL",
-    features: [
-      "Everything in Operator",
-      "3 AI agents",
-      "RoadCode private repos",
-      "Pixel Memory (×4,096)",
-      "Priority support",
-      "Up to 3 nodes",
-    ],
-    cta: "Start Pro",
-    action: "checkout",
-  },
-  {
-    id: "sovereign",
-    name: "Sovereign",
-    tagline: "Full sovereignty",
-    price: 299,
-    interval: "month",
-    color: "#8844FF",
-    featured: true,
-    priceId: "price_1SzlKmChUUSEbzyhXSDXOAVw",
-    features: [
-      "Everything in Pro",
-      "Full agent fleet (8 agents)",
-      "Hybrid Memory (×2.18B)",
-      "Threshold addressing",
-      "Dedicated infrastructure",
-      "Unlimited nodes",
-      "SLA guarantee",
-      "Direct Slack support",
-    ],
-    cta: "Get Sovereign",
-    action: "checkout",
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    tagline: "Custom everything",
-    price: null,
-    interval: "custom",
-    color: "#00D4FF",
-    priceId: "price_1T0oP8ChUUSEbzyhWO1Y5vHJ",
-    features: [
-      "Everything in Sovereign",
-      "White-label OS",
-      "On-prem or air-gapped",
-      "Custom agent training",
-      "Hailo-8 AI acceleration",
-      "Dedicated success team",
-      "Custom integrations",
-      "Volume licensing",
-    ],
-    cta: "Talk to Us",
-    action: "contact",
-  },
-];
+// ─── RoadPay checkout ────────────────────────────────────────────────
+async function handleSubscribe(planSlug, addonSlugs, token, customerId) {
+  if (!planSlug) return;
+  trackEvent('checkout_start', { plan: planSlug });
 
-const ADDONS = [
-  { name: "Lucidia Enhanced", price: 29, interval: "mo", priceId: "price_1T0oP4ChUUSEbzyhxPGyhZEe", desc: "Advanced reasoning + memory", color: "#8844FF" },
-  { name: "RoadAuth Startup", price: 99, interval: "mo", priceId: "price_1T0oP5ChUUSEbzyhBXArCxFy", desc: "Auth, SSO, RBAC for your apps", color: "#FF2255" },
-  { name: "Context Bridge", price: 10, interval: "mo", priceId: "price_1T0DndChUUSEbzyhy6FPPtXG", desc: "AI assistant context hosting", color: "#4488FF" },
-  { name: "Knowledge Hub", price: 15, interval: "mo", priceId: "price_1Snl1ZChUUSEbzyhMhOCqYoB", desc: "Searchable knowledge base", color: "#FF6B2B" },
-];
-
-// ─── Checkout handler ───────────────────────────────────────────────
-async function handleCheckout(priceId) {
-  if (!priceId) return;
+  if (!token) {
+    window.location.href = "/auth?redirect=/pricing";
+    return;
+  }
 
   try {
-    const res = await fetch(`${STRIPE_API}/checkout`, {
+    const res = await fetch(`${ROADPAY_API}/subscribe`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
       body: JSON.stringify({
-        priceId,
-        successUrl: window.location.origin + "/billing?success=true",
-        cancelUrl: window.location.origin + "/pricing",
+        customer_id: customerId,
+        plan_slug: planSlug,
+        addon_slugs: addonSlugs || [],
+        success_url: window.location.origin + "/billing?success=true",
+        cancel_url: window.location.origin + "/pricing",
       }),
     });
 
     const data = await res.json();
 
-    if (data.url) {
-      window.location.href = data.url;
-    } else if (data.sessionId && stripePromise) {
-      const stripe = await stripePromise;
-      await stripe.redirectToCheckout({ sessionId: data.sessionId });
+    if (data.checkout_url) {
+      window.location.href = data.checkout_url;
+    } else if (data.status === 'active') {
+      // Free plan — subscribed immediately
+      window.location.href = "/billing?success=true";
     } else {
-      console.error("Checkout error:", data);
+      console.error("Subscribe error:", data);
     }
-  } catch (err) {
-    console.error("Checkout failed:", err);
+  } catch (e) {
+    console.error("Subscribe failed:", e);
   }
 }
 
-async function handlePortal() {
+async function handlePortal(customerId, token) {
+  if (!customerId || !token) {
+    window.location.href = "/auth?redirect=/pricing";
+    return;
+  }
   try {
-    const res = await fetch(`${STRIPE_API}/portal`, {
+    const res = await fetch(`${ROADPAY_API}/portal`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        returnUrl: window.location.origin + "/billing",
-      }),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ customer_id: customerId }),
     });
     const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  } catch (err) {
-    console.error("Portal failed:", err);
+    // RoadPay returns full billing data, not a redirect
+    return data;
+  } catch (e) {
+    console.error("Portal failed:", e);
   }
 }
+
+// ─── Plan colors by tier ─────────────────────────────────────────────
+const TIER_COLORS = ["#4488FF", "#FF6B2B", "#8844FF", "#00D4FF"];
+const TIER_CTA = ["Deploy Free", "Start Rider", "Get Paver", "Talk to Us"];
+const TIER_TAGLINE = ["Open source core", "For builders", "For teams", "Custom everything"];
 
 // ─── Components ─────────────────────────────────────────────────────
-function PlanCard({ plan, annual }) {
+function PlanCard({ plan, annual, onSubscribe }) {
   const [hover, setHover] = useState(false);
-  const displayPrice = plan.price === null ? "Custom" : annual ? `$${Math.round(plan.price * 10)}` : `$${plan.price}`;
-  const displayInterval = plan.price === null ? "" : annual ? "/year" : plan.price === 0 ? "" : "/mo";
+  const color = TIER_COLORS[plan.tier] || "#4488FF";
+  const price = plan.amount / 100;
+  const displayPrice = plan.tier === 3 ? "Custom" : annual ? `$${Math.round(price * 10)}` : price === 0 ? "$0" : `$${price}`;
+  const displayInterval = plan.tier === 3 ? "" : annual ? "/year" : price === 0 ? "" : "/mo";
+  const featured = plan.tier === 2;
 
   const onClick = () => {
-    if (plan.action === "github") window.open("https://github.com/blackroad-os", "_blank");
-    else if (plan.action === "contact") window.location.href = "mailto:alexa@blackroad.io?subject=Enterprise%20Inquiry";
-    else if (plan.action === "checkout") handleCheckout(plan.priceId);
+    if (plan.tier === 0) window.open("https://github.com/blackboxprogramming/BlackRoad-Operating-System", "_blank");
+    else if (plan.tier === 3) window.location.href = "mailto:alexa@blackroad.io?subject=Enterprise%20Inquiry";
+    else onSubscribe(plan.slug);
   };
 
   return (
@@ -169,23 +100,26 @@ function PlanCard({ plan, annual }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        background: plan.featured ? "#080808" : "#050505",
-        border: `1px solid ${plan.featured ? plan.color + "44" : hover ? plan.color + "33" : "#151515"}`,
+        background: featured ? "#080808" : "#050505",
+        border: `1px solid ${featured ? color + "44" : hover ? color + "33" : "#151515"}`,
         padding: "32px 24px",
         position: "relative",
-        boxShadow: plan.featured ? `0 0 60px ${plan.color}15` : hover ? `0 0 30px ${plan.color}10` : "none",
+        boxShadow: featured ? `0 0 60px ${color}15` : hover ? `0 0 30px ${color}10` : "none",
         display: "flex", flexDirection: "column",
         transition: "all 0.25s",
         transform: hover ? "translateY(-2px)" : "none",
       }}
     >
-      {plan.featured && (
+      {featured && (
         <div style={{ position: "absolute", top: -1, left: 24, right: 24, height: 2, background: GRAD }} />
       )}
 
       {/* Plan name */}
-      <div style={{ fontFamily: mono, fontSize: 9, color: plan.color, textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 6 }}>{plan.name}</div>
-      <div style={{ fontFamily: inter, fontSize: 12, color: "#383838", marginBottom: 24 }}>{plan.tagline}</div>
+      <div style={{ fontFamily: mono, fontSize: 9, color: "#888", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0 }} />
+        {plan.name}
+      </div>
+      <div style={{ fontFamily: inter, fontSize: 12, color: "#383838", marginBottom: 24 }}>{TIER_TAGLINE[plan.tier] || plan.description}</div>
 
       {/* Price */}
       <div style={{ marginBottom: 28 }}>
@@ -195,9 +129,9 @@ function PlanCard({ plan, annual }) {
 
       {/* Features */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 32, flex: 1 }}>
-        {plan.features.map(f => (
+        {(plan.features || []).map(f => (
           <div key={f} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: plan.color, flexShrink: 0, marginTop: 6 }} />
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0, marginTop: 6 }} />
             <span style={{ fontFamily: inter, fontSize: 13, color: "#606060", lineHeight: 1.5 }}>{f}</span>
           </div>
         ))}
@@ -211,45 +145,49 @@ function PlanCard({ plan, annual }) {
         style={{
           fontFamily: inter, fontWeight: 600, fontSize: 14,
           padding: "14px 24px",
-          background: plan.featured ? GRAD : plan.price === 0 ? "transparent" : plan.color + "22",
-          backgroundSize: plan.featured ? "200% 100%" : "auto",
-          border: plan.featured ? "none" : `1px solid ${plan.price === 0 ? "#2a2a2a" : plan.color + "44"}`,
-          color: plan.featured ? "#fff" : plan.price === 0 ? "#888" : plan.color,
+          background: featured ? GRAD : price === 0 ? "transparent" : color + "22",
+          backgroundSize: featured ? "200% 100%" : "auto",
+          border: featured ? "none" : `1px solid ${price === 0 ? "#2a2a2a" : color + "44"}`,
+          color: featured ? "#fff" : price === 0 ? "#888" : "#f5f5f5",
           cursor: "pointer",
           transition: "all 0.2s",
           letterSpacing: "0.01em",
         }}
-      >{plan.cta}</button>
+      >{TIER_CTA[plan.tier] || plan.name}</button>
     </div>
   );
 }
 
-function AddonCard({ addon }) {
+const ADDON_COLORS = { "lucidia-enhanced": "#8844FF", "roadauth": "#FF2255", "context-bridge": "#4488FF", "knowledge-hub": "#FF6B2B" };
+
+function AddonCard({ addon, onSubscribe }) {
   const [hover, setHover] = useState(false);
+  const color = ADDON_COLORS[addon.slug] || "#4488FF";
+  const price = addon.amount / 100;
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => handleCheckout(addon.priceId)}
+      onClick={() => onSubscribe(addon.slug)}
       style={{
         background: "#050505",
-        border: `1px solid ${hover ? addon.color + "33" : "#151515"}`,
+        border: `1px solid ${hover ? color + "33" : "#151515"}`,
         padding: "20px",
         cursor: "pointer",
         transition: "all 0.2s",
         display: "flex", alignItems: "center", gap: 16,
       }}
     >
-      <div style={{ width: 40, height: 40, borderRadius: 10, background: addon.color + "15", border: `1px solid ${addon.color}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <div style={{ width: 8, height: 8, borderRadius: "50%", background: addon.color }} />
+      <div style={{ width: 40, height: 40, borderRadius: 10, background: color + "15", border: `1px solid ${color}22`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: color }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontFamily: grotesk, fontWeight: 600, fontSize: 14, color: "#d0d0d0", marginBottom: 2 }}>{addon.name}</div>
-        <div style={{ fontFamily: inter, fontSize: 12, color: "#444" }}>{addon.desc}</div>
+        <div style={{ fontFamily: inter, fontSize: 12, color: "#444" }}>{addon.description}</div>
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <div style={{ fontFamily: grotesk, fontWeight: 700, fontSize: 18, color: "#f0f0f0" }}>${addon.price}</div>
-        <div style={{ fontFamily: mono, fontSize: 9, color: "#383838" }}>/{addon.interval}</div>
+        <div style={{ fontFamily: grotesk, fontWeight: 700, fontSize: 18, color: "#f0f0f0" }}>${price}</div>
+        <div style={{ fontFamily: mono, fontSize: 9, color: "#383838" }}>/mo</div>
       </div>
     </div>
   );
@@ -282,14 +220,57 @@ function FAQItem({ q, a }) {
 // ─── Main page ──────────────────────────────────────────────────────
 export default function BlackRoadPricing() {
   const [annual, setAnnual] = useState(false);
-  const [prices, setPrices] = useState(null);
+  const [plans, setPlans] = useState([]);
+  const [addons, setAddons] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState(null);
+  const { user, token } = useAuth();
 
   useEffect(() => {
-    fetch(`${STRIPE_API}/prices`)
-      .then(r => r.json())
-      .then(d => setPrices(d.prices))
-      .catch(() => {});
+    fetch(`${ROADPAY_API}/plans`).then(r => r.json()).then(d => setPlans(d.plans || [])).catch(() => {});
+    fetch(`${ROADPAY_API}/addons`).then(r => r.json()).then(d => setAddons(d.addons || [])).catch(() => {});
   }, []);
+
+  // Check if user has existing subscription
+  useEffect(() => {
+    if (user?.email) {
+      fetch(`${ROADPAY_API}/lookup?email=${encodeURIComponent(user.email)}`)
+        .then(r => r.json())
+        .then(d => { if (d.found) setCurrentPlan(d); })
+        .catch(() => {});
+    }
+  }, [user]);
+
+  const doSubscribe = async (planSlug, addonSlugs) => {
+    // Ensure customer exists in RoadPay
+    if (!user) {
+      window.location.href = "/auth?redirect=/pricing";
+      return;
+    }
+
+    let customerId = currentPlan?.customer_id;
+    if (!customerId) {
+      // Create customer
+      try {
+        const res = await fetch(`${ROADPAY_API}/customers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+          body: JSON.stringify({ email: user.email, name: user.name || user.email }),
+        });
+        const data = await res.json();
+        if (data.id) customerId = data.id;
+        else if (res.status === 409) {
+          // Already exists, look them up
+          const lookup = await fetch(`${ROADPAY_API}/lookup?email=${encodeURIComponent(user.email)}`).then(r => r.json());
+          customerId = lookup.customer_id;
+        }
+      } catch (e) {
+        console.error("Customer creation failed:", e);
+        return;
+      }
+    }
+
+    handleSubscribe(planSlug, addonSlugs, token, customerId);
+  };
 
   return (
     <>
@@ -335,16 +316,26 @@ export default function BlackRoadPricing() {
                 }}
               >
                 {opt}
-                {opt === "Annual" && <span style={{ fontFamily: mono, fontSize: 9, color: "#00D4FF", marginLeft: 6 }}>-17%</span>}
+                {opt === "Annual" && <span style={{ fontFamily: mono, fontSize: 9, color: "#f5f5f5", marginLeft: 6, display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: "#00D4FF", display: "inline-block" }} />-17%</span>}
               </button>
             ))}
           </div>
         </div>
 
+        {/* Current plan indicator */}
+        {currentPlan?.plan && (
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#060606", border: "1px solid #1a1a1a", padding: "8px 16px" }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#00D4FF" }} />
+              <span style={{ fontFamily: inter, fontSize: 12, color: "#888" }}>Current plan: <strong style={{ color: "#f0f0f0" }}>{currentPlan.plan.name}</strong></span>
+            </div>
+          </div>
+        )}
+
         {/* Plans */}
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 20px 60px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 8 }}>
-            {PLANS.map(p => <PlanCard key={p.id} plan={p} annual={annual} />)}
+            {plans.map(p => <PlanCard key={p.id} plan={p} annual={annual} onSubscribe={(slug) => doSubscribe(slug)} />)}
           </div>
         </div>
 
@@ -352,7 +343,7 @@ export default function BlackRoadPricing() {
         <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 20px 60px" }}>
           <div style={{ fontFamily: mono, fontSize: 10, color: "#383838", textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 20, textAlign: "center" }}>Add-ons</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {ADDONS.map(a => <AddonCard key={a.name} addon={a} />)}
+            {addons.map(a => <AddonCard key={a.id} addon={a} onSubscribe={(slug) => doSubscribe('rider', [slug])} />)}
           </div>
         </div>
 
@@ -399,14 +390,14 @@ export default function BlackRoadPricing() {
             <FAQItem q="What are the 8 agents?" a="Alice (Gateway), Lucidia (Memory), Cecilia (Edge), Cece (API), Aria (Orchestration), Eve (Intelligence), Meridian (Networking), and Sentinel (Security). Each runs on dedicated hardware." />
             <FAQItem q="Can I self-host everything?" a="Yes. The Operator plan is fully open source. You deploy to your own Raspberry Pis, servers, or cloud instances. We never touch your data." />
             <FAQItem q="What is Z:=yx-w?" a="The Z-framework is our unified feedback primitive. It models every system interaction as Z = yx - w, making infrastructure composable, predictable, and mathematically coherent." />
-            <FAQItem q="How does billing work?" a="All billing is handled through Stripe. You can manage your subscription, update payment methods, and view invoices through the billing portal." />
+            <FAQItem q="How does billing work?" a="Billing is powered by RoadPay, BlackRoad's own payment system. You can manage your subscription, view invoices, and update payment methods through the billing portal." />
           </div>
         </div>
 
         {/* Billing portal link */}
         <div style={{ textAlign: "center", padding: "0 20px 60px" }}>
           <button
-            onClick={handlePortal}
+            onClick={() => handlePortal(currentPlan?.customer_id, token)}
             style={{
               fontFamily: inter, fontSize: 13, color: "#444",
               background: "none", border: "1px solid #1a1a1a",
@@ -422,7 +413,7 @@ export default function BlackRoadPricing() {
 
         {/* Footer */}
         <div style={{ borderTop: "1px solid #0d0d0d", padding: "20px 28px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <div style={{ fontFamily: mono, fontSize: 9, color: "#1e1e1e" }}>BlackRoad OS, Inc. · Payments secured by Stripe</div>
+          <div style={{ fontFamily: mono, fontSize: 9, color: "#1e1e1e" }}>BlackRoad OS — Pave Tomorrow. · Powered by RoadPay</div>
           <div style={{ height: 1, width: 40, background: GRAD, opacity: 0.4 }} />
           <div style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>Z:=yx−w · 2026</div>
         </div>

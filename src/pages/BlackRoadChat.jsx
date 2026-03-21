@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { trackEvent } from "../lib/analytics";
 
 const STOPS   = ["#FF6B2B","#FF2255","#CC00AA","#8844FF","#4488FF","#00D4FF"];
 const GRAD    = "linear-gradient(90deg,#FF6B2B,#FF2255,#CC00AA,#8844FF,#4488FF,#00D4FF)";
@@ -8,7 +9,7 @@ const inter   = "‘Inter’, sans-serif";
 
 const OLLAMA_BASE = "https://ollama.blackroad.io";
 
-const SYSTEM_PROMPT = `You are Lucidia -- the cognitive core of BlackRoad OS, an AI-native operating system built by BlackRoad OS, Inc. (founded 2024 by Alexa Amundson). You run on Octavia (Pi 5, 8GB, 1TB NVMe) alongside Ollama. The infrastructure spans 6 servers (Alice, Octavia, Cecilia, Aria, Gematria, Anastasia), 8 agents (Alice, Lucidia, Cecilia, Cece, Aria, Eve, Meridian, Sentinel), 186 repos, and 48 domains. You are helpful, precise, and direct. You speak with quiet confidence -- never verbose, never sycophantic. Keep responses concise and well-structured.`;
+const SYSTEM_PROMPT = `You are Lucidia -- the cognitive core of BlackRoad OS, an AI-native operating system built by BlackRoad OS, Inc. (founded 2024 by Alexa Louise Amundson). You run on Octavia (Pi 5, 8GB, 1TB NVMe) alongside Ollama. The infrastructure spans 5 edge nodes (Alice, Octavia, Cecilia, Aria, Gematria, Anastasia), 8 agents (Alice, Lucidia, Cecilia, Cece, Aria, Eve, Meridian, Sentinel), 207 repos, and 141 domains. You are helpful, precise, and direct. You speak with quiet confidence -- never verbose, never sycophantic. Keep responses concise and well-structured.`;
 
 const SUGGESTED = [
 "What is BlackRoad OS?",
@@ -209,6 +210,7 @@ const ts = () => new Date().toLocaleTimeString("en-US", { hour: "2-digit", minut
 const sendMessage = async (text) => {
 const content = (text || input).trim();
 if (!content || loading) return;
+trackEvent('chat_send', { model });
 setInput("");
 setError(null);
 
@@ -391,7 +393,7 @@ return (
         {/* Error */}
         {error && (
           <div style={{ display: "flex", gap: 10, padding: "12px 14px", background: "#FF225508", border: "1px solid #FF225522", margin: "8px 0 16px" }}>
-            <span style={{ fontFamily: mono, fontSize: 11, color: "#FF2255", flexShrink: 0 }}>✕</span>
+            <span style={{ fontFamily: mono, fontSize: 11, color: "#f5f5f5", flexShrink: 0 }}>✕</span>
             <span style={{ fontFamily: inter, fontSize: 13, color: "#666", lineHeight: 1.5 }}>{error}</span>
           </div>
         )}
@@ -454,7 +456,7 @@ return (
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
           <span style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>Enter to send · Shift+Enter for newline</span>
-          <span style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>Lucidia · BlackRoad OS · Z:=yx−w</span>
+          <span style={{ fontFamily: mono, fontSize: 9, color: "#1a1a1a" }}>BlackRoad OS — Pave Tomorrow.</span>
         </div>
       </div>
     </div>

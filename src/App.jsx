@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import { usePageTracking } from './lib/analytics';
+import { DomainProvider, useDomain } from './config/DomainContext';
 
-// Pages — all 20 templates
+// Pages
 import BlackRoadLanding from './pages/BlackRoadLanding';
 import BlackRoadDashboard from './pages/BlackRoadDashboard';
 import BlackRoadStatus from './pages/BlackRoadStatus';
@@ -25,41 +27,84 @@ import LeadershipPage from './pages/leadership-page';
 import BlackRoadPricing from './pages/BlackRoadPricing';
 import BlogList from './pages/blog/BlogList';
 import BlogPost from './pages/blog/BlogPost';
+import TrollBridge from './pages/TrollBridge';
+import BlackRoadAnalytics from './pages/BlackRoadAnalytics';
+import RoadSearch from './pages/RoadSearch';
 
 const inter = "'Inter', sans-serif";
 const mono = "'JetBrains Mono', monospace";
 
-const NAV_ITEMS = [
-  { path: '/', label: 'Home' },
-  { path: '/dashboard', label: 'Dashboard' },
-  { path: '/os', label: 'OS' },
-  { path: '/status', label: 'Status' },
-  { path: '/chat', label: 'Chat' },
-  { path: '/terminal', label: 'Terminal' },
-  { path: '/explorer', label: 'Explorer' },
-  { path: '/chain', label: 'RoadChain' },
-  { path: '/docs', label: 'Docs' },
-  { path: '/about', label: 'About' },
-  { path: '/leadership', label: 'Leadership' },
-  { path: '/auth', label: 'Auth' },
-  { path: '/settings', label: 'Settings' },
-  { path: '/onboarding', label: 'Onboarding' },
-  { path: '/roadmap', label: 'Roadmap' },
-  { path: '/brand', label: 'Brand' },
-  { path: '/brand-kit', label: 'Brand Kit' },
-  { path: '/animations', label: 'Animations' },
-  { path: '/command', label: 'Command' },
-  { path: '/chat2', label: 'Chat v2' },
-  { path: '/pricing', label: 'Pricing' },
-  { path: '/billing', label: 'Billing' },
-  { path: '/blog', label: 'Blog' },
+// Component map — string keys from domain config → React components
+const COMPONENT_MAP = {
+  BlackRoadLanding,
+  BlackRoadDashboard,
+  BlackRoadStatus,
+  BlackRoadChat,
+  BlackRoadChat2,
+  BlackRoadOS,
+  BlackRoadExplorer,
+  BlackRoadCommand,
+  BlackRoadDocs,
+  BlackRoadAuth,
+  BlackRoadSettings,
+  BlackRoadAnimations,
+  BlackRoadBrandSystem,
+  BlackRoadOnboarding,
+  BlackRoadRoadmapPage,
+  BrandTemplate,
+  LucidiaTerminal,
+  RoadChainExplorer,
+  AboutPage,
+  LeadershipPage,
+  BlackRoadPricing,
+  BlogList,
+  TrollBridge,
+  BlackRoadAnalytics,
+  RoadSearch,
+};
+
+// All available routes
+const ALL_ROUTES = [
+  { path: '/dashboard', element: <BlackRoadDashboard />, label: 'Dashboard' },
+  { path: '/os', element: <BlackRoadOS />, label: 'OS' },
+  { path: '/status', element: <BlackRoadStatus />, label: 'Status' },
+  { path: '/chat', element: <BlackRoadChat />, label: 'Chat' },
+  { path: '/chat2', element: <BlackRoadChat2 />, label: 'Chat v2' },
+  { path: '/terminal', element: <LucidiaTerminal />, label: 'Terminal' },
+  { path: '/explorer', element: <BlackRoadExplorer />, label: 'Explorer' },
+  { path: '/chain', element: <RoadChainExplorer />, label: 'RoadChain' },
+  { path: '/docs', element: <BlackRoadDocs />, label: 'Docs' },
+  { path: '/about', element: <AboutPage />, label: 'About' },
+  { path: '/leadership', element: <LeadershipPage />, label: 'Leadership' },
+  { path: '/auth', element: <BlackRoadAuth />, label: 'Auth' },
+  { path: '/settings', element: <BlackRoadSettings />, label: 'Settings' },
+  { path: '/onboarding', element: <BlackRoadOnboarding />, label: 'Onboarding' },
+  { path: '/roadmap', element: <BlackRoadRoadmapPage />, label: 'Roadmap' },
+  { path: '/brand', element: <BlackRoadBrandSystem />, label: 'Brand' },
+  { path: '/brand-kit', element: <BrandTemplate />, label: 'Brand Kit' },
+  { path: '/animations', element: <BlackRoadAnimations />, label: 'Animations' },
+  { path: '/command', element: <BlackRoadCommand />, label: 'Command' },
+  { path: '/pricing', element: <BlackRoadPricing />, label: 'Pricing' },
+  { path: '/billing', element: <BlackRoadPricing />, label: 'Billing' },
+  { path: '/blog', element: <BlogList />, label: 'Blog' },
+  { path: '/trollbridge', element: <TrollBridge />, label: 'TrollBridge' },
+  { path: '/analytics', element: <BlackRoadAnalytics />, label: 'Analytics' },
+  { path: '/search', element: <RoadSearch />, label: 'Search' },
 ];
 
 function AppNav() {
   const location = useLocation();
+  const domain = useDomain();
   const [open, setOpen] = useState(false);
 
   if (location.pathname === '/') return null;
+
+  // Filter nav items based on domain's allowed routes
+  const navItems = [{ path: '/', label: 'Home' }].concat(
+    domain.routes === 'all'
+      ? ALL_ROUTES
+      : ALL_ROUTES.filter(r => domain.routes.includes(r.path))
+  );
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: open ? 220 : 48, zIndex: 9999, transition: 'width 0.2s ease' }}>
@@ -68,10 +113,10 @@ function AppNav() {
           background: 'none', border: 'none', color: '#555', cursor: 'pointer',
           padding: '16px 14px', fontFamily: mono, fontSize: 14, textAlign: 'left',
         }}>
-          {open ? '◂' : '▸'}
+          {open ? '\u25C2' : '\u25B8'}
         </button>
         <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {NAV_ITEMS.map(item => {
+          {navItems.map(item => {
             const active = location.pathname === item.path;
             return (
               <Link key={item.path} to={item.path} onClick={() => setOpen(false)} style={{
@@ -79,7 +124,7 @@ function AppNav() {
                 color: active ? '#f0f0f0' : '#444',
                 textDecoration: 'none', padding: '8px 14px',
                 background: active ? '#111' : 'transparent',
-                borderLeft: active ? '2px solid #8844FF' : '2px solid transparent',
+                borderLeft: active ? `2px solid ${domain.theme.accent}` : '2px solid transparent',
                 whiteSpace: 'nowrap', overflow: 'hidden',
                 transition: 'color 0.15s, background 0.15s',
               }}>
@@ -90,8 +135,8 @@ function AppNav() {
         </div>
         {open && (
           <div style={{ padding: '12px 14px', borderTop: '1px solid #141414' }}>
-            <div style={{ fontFamily: mono, fontSize: 8, color: '#252525', letterSpacing: '0.1em' }}>BLACKROAD CLOUD</div>
-            <div style={{ fontFamily: mono, fontSize: 8, color: '#1a1a1a' }}>186 repos · 48 domains · 8 agents</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: '#252525', letterSpacing: '0.1em' }}>{domain.name.toUpperCase()}</div>
+            <div style={{ fontFamily: mono, fontSize: 8, color: '#1a1a1a' }}>{domain.tagline}</div>
           </div>
         )}
       </div>
@@ -99,36 +144,47 @@ function AppNav() {
   );
 }
 
+function PageTracker() {
+  usePageTracking();
+  return null;
+}
+
+function AppRoutes() {
+  const domain = useDomain();
+  const LandingComponent = COMPONENT_MAP[domain.landing] || BlackRoadLanding;
+
+  // Filter routes based on domain config
+  const activeRoutes = domain.routes === 'all'
+    ? ALL_ROUTES
+    : ALL_ROUTES.filter(r => domain.routes.includes(r.path));
+
+  // Set document title based on domain
+  if (typeof document !== 'undefined') {
+    document.title = `${domain.name} \u2014 ${domain.tagline}`;
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<LandingComponent />} />
+      {activeRoutes.map(r => (
+        <Route key={r.path} path={r.path} element={r.element} />
+      ))}
+      {/* Blog post route always available if /blog is allowed */}
+      {(domain.routes === 'all' || domain.routes.includes('/blog')) && (
+        <Route path="/blog/:slug" element={<BlogPost />} />
+      )}
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <AppNav />
-      <Routes>
-        <Route path="/" element={<BlackRoadLanding />} />
-        <Route path="/dashboard" element={<BlackRoadDashboard />} />
-        <Route path="/os" element={<BlackRoadOS />} />
-        <Route path="/status" element={<BlackRoadStatus />} />
-        <Route path="/chat" element={<BlackRoadChat />} />
-        <Route path="/chat2" element={<BlackRoadChat2 />} />
-        <Route path="/terminal" element={<LucidiaTerminal />} />
-        <Route path="/explorer" element={<BlackRoadExplorer />} />
-        <Route path="/chain" element={<RoadChainExplorer />} />
-        <Route path="/docs" element={<BlackRoadDocs />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/leadership" element={<LeadershipPage />} />
-        <Route path="/auth" element={<BlackRoadAuth />} />
-        <Route path="/settings" element={<BlackRoadSettings />} />
-        <Route path="/onboarding" element={<BlackRoadOnboarding />} />
-        <Route path="/roadmap" element={<BlackRoadRoadmapPage />} />
-        <Route path="/brand" element={<BlackRoadBrandSystem />} />
-        <Route path="/brand-kit" element={<BrandTemplate />} />
-        <Route path="/animations" element={<BlackRoadAnimations />} />
-        <Route path="/command" element={<BlackRoadCommand />} />
-        <Route path="/pricing" element={<BlackRoadPricing />} />
-        <Route path="/billing" element={<BlackRoadPricing />} />
-        <Route path="/blog" element={<BlogList />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
-      </Routes>
-    </BrowserRouter>
+    <DomainProvider>
+      <BrowserRouter>
+        <PageTracker />
+        <AppNav />
+        <AppRoutes />
+      </BrowserRouter>
+    </DomainProvider>
   );
 }
